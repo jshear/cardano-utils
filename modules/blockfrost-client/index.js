@@ -1,3 +1,4 @@
+const fetch = require('node-fetch');
 const { convertToHex, convertFromHex } = require('../common');
 
 class BlockfrostClient {
@@ -64,13 +65,18 @@ class BlockfrostClient {
         const assets = await this._getAllPages(this._getOwnedAssetsEndpoint(stakeAddr));
         return assets.filter(asset => {
             return !policyId || asset.unit.includes(policyId);
-        }).map(asset => {
+        }).reduce((acc, asset) => {
             // Get asset name
             const assetName = convertFromHex(asset.unit.replace(policyId, ''));
-            if (policyId) return assetName;
+            const quantity = parseFloat(asset.quantity);
+            if (policyId) {
+                acc[assetName] = quantity;
+                return acc;
+            }
             // If no policy was specified, include the policy in the asset identifier
-            return policyId + '.' + assetName;
-        });
+            acc[policyId + '.' + assetName] = quantity;
+            return acc;
+        }, {});
     }
 
     async getPolicyAssets(policyId) {

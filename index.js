@@ -46,7 +46,7 @@ const CardanoUtils = (function(blockfrostProjectId, testnet, customLog) {
 
     async function getNFTAssetOwner(policyId, assetName) {
         if (!state.blockfrostClient) throw new Error('BlockFrost is unavailable -- no project ID was provided');
-        return await state.blockfrostClient.getNFTAssetOwner(policyId, assetName).catch(err => {
+        return state.blockfrostClient.getNFTAssetOwner(policyId, assetName).catch(err => {
             log.error(`Unable to obtain NFT asset owner for ${policyId}.${assetName}`, err);
             return null;
         });
@@ -54,7 +54,7 @@ const CardanoUtils = (function(blockfrostProjectId, testnet, customLog) {
 
     async function getAssetOwners(policyId, assetName) {
         if (!state.blockfrostClient) throw new Error('BlockFrost is unavailable -- no project ID was provided');
-        return await state.blockfrostClient.getAssetOwners(policyId, assetName).catch(err => {
+        return state.blockfrostClient.getAssetOwners(policyId, assetName).catch(err => {
             log.error(`Unable to obtain asset owners for ${policyId}.${assetName}`, err);
             return null;
         });
@@ -63,7 +63,7 @@ const CardanoUtils = (function(blockfrostProjectId, testnet, customLog) {
     async function getOwnedAssets(address, policyId) {
         const stakeAddr = getStakeAddress(address);
         if (!state.blockfrostClient) throw new Error('BlockFrost is unavailable -- no project ID was provided');
-        return await state.blockfrostClient.getOwnedAssets(stakeAddr, policyId).catch(err => {
+        return state.blockfrostClient.getOwnedAssets(stakeAddr, policyId).catch(err => {
             log.error(`Unable to obtain owned assets for ${stakeAddr}.${policyId}`, err);
             return null;
         });
@@ -71,7 +71,7 @@ const CardanoUtils = (function(blockfrostProjectId, testnet, customLog) {
 
     async function getPolicyAssets(policyId) {
         if (!state.blockfrostClient) throw new Error('BlockFrost is unavailable -- no project ID was provided');
-        return await state.blockfrostClient.getPolicyAssets(policyId).catch(err => {
+        return state.blockfrostClient.getPolicyAssets(policyId).catch(err => {
             log.error(`Unable to obtain policy assets for ${policyId}`, err);
             return null;
         });
@@ -79,7 +79,7 @@ const CardanoUtils = (function(blockfrostProjectId, testnet, customLog) {
 
     async function getAssetData(policyId, assetName) {
         if (!state.blockfrostClient) throw new Error('BlockFrost is unavailable -- no project ID was provided');
-        return await state.blockfrostClient.getAssetData(policyId, assetName).catch(err => {
+        return state.blockfrostClient.getAssetData(policyId, assetName).catch(err => {
             log.error(`Unable to obtain asset data for ${policyId}.${assetName}`, err);
             return null;
         });
@@ -100,4 +100,4 @@ const CardanoUtils = (function(blockfrostProjectId, testnet, customLog) {
     };
 });
 
-module.exports = (blockfrostProjectId, testnet, customLog) => new CardanoUtils(customLog);
+module.exports = (blockfrostProjectId, testnet, customLog) => new CardanoUtils(blockfrostProjectId, testnet, customLog);

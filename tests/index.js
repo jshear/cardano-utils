@@ -2,7 +2,7 @@ const createCardanoUtils = require('../index.js');
 
 const projectId = '';
 
-const cardanoUtils = createCardanoUtils(projectId);
+const cardanoUtils = createCardanoUtils(projectId, false);
 
 function testValidateSignedMessage() {
 
@@ -20,12 +20,8 @@ function testGetStakeAddress() {
     if (stakeAddr !== 'stake1u92u6hgt4za3hnflv0h7zxfdprl68pa886rqwzdchfampmgy03sqj')
         throw new Error('Stake address did not remain unchanged');
 
-    try {
-        cardanoUtils.getStakeAddress('addrfdsafsdf');
-        throw new Error('Stake address conversion didn\'t fail with invalid address');
-    } catch(err) {
-
-    }
+    stakeAddr = cardanoUtils.getStakeAddress('addrfdsafsdf');
+    if (stakeAddr) throw new Error('Stake address conversion didn\'t fail with invalid address');
 }
 
 function testConvertToHex() {
@@ -40,9 +36,9 @@ function testGetSlot() {
     // TODO
 }
 
-function testGetNFTAssetOwner() {
-    const owner = cardanoUtils.getNFTAssetOwner(
-        '893882ea2c018b38ad3d988773aa8d49fcdbe3f5bc54cdff75b7754f', 'TokenAbilityAeroBlastSilver'
+async function testGetNFTAssetOwner() {
+    const owner = await cardanoUtils.getNFTAssetOwner(
+        'b81e5ffa08dbd35bf7ac7f9d7f0f58d3581444510b35ea4d098313b5', 'CryptoPet198'
     );
 
     if (!owner || !owner.startsWith('addr')) throw new Error('Failed to obtain asset owner');
@@ -52,15 +48,30 @@ function testGetAssetOwners() {
     // TODO
 }
 
+
+
+
 function testGetOwnedAssets() {
     // TODO
 }
 
-function testGetPolicyAssets() {
-    const assets = cardanoUtils.getPolicyAssets('b81e5ffa08dbd35bf7ac7f9d7f0f58d3581444510b35ea4d098313b5');
+async function testGetPolicyAssets() {
+    const assets = await cardanoUtils.getPolicyAssets('b81e5ffa08dbd35bf7ac7f9d7f0f58d3581444510b35ea4d098313b5');
     if (!assets || assets.length !== 10000) throw new Error('Invalid asset count for CryptoPetz. Only ' + assets.length + ' found');
 }
 
 function testGetAssetData() {
     // TODO
 }
+
+testValidateSignedMessage();
+testGetStakeAddress();
+testConvertToHex();
+testConvertFromHex();
+testGetSlot();
+testGetNFTAssetOwner();
+testGetAssetOwners();
+testGetOwnedAssets();
+testGetPolicyAssets();
+testGetAssetData();
+
