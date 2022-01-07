@@ -67,7 +67,7 @@ class BlockfrostClient {
             return !policyId || asset.unit.includes(policyId);
         }).reduce((acc, asset) => {
             // Get asset name
-            const assetName = convertFromHex(asset.unit.replace(policyId, ''));
+            const assetName = policyId ? convertFromHex(asset.unit.replace(policyId, '')) : convertFromHex(asset.unit).substr(56);
             const quantity = parseFloat(asset.quantity);
             if (policyId) {
                 acc[assetName] = quantity;
