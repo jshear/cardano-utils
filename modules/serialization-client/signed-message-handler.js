@@ -1,5 +1,4 @@
-const { appRoot } = require('../config/config.js');
-const { COSESign1, Label } = require(appRoot + "/node_modules_external/@emurgo/message-signing");
+const { COSESign1, Label } = require('../../node_modules_external/@emurgo/message-signing');
 const { Address, Ed25519Signature, PublicKey, BaseAddress, StakeCredential } = require('@emurgo/cardano-serialization-lib-nodejs');
 const { Buffer } = require('buffer');
 
