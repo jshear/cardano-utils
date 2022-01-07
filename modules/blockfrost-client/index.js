@@ -62,14 +62,16 @@ class BlockfrostClient {
     }
 
     async getOwnedAssets(stakeAddr, policyId) {
+        const policyProvided = !!policyId;
         const assets = await this._getAllPages(this._getOwnedAssetsEndpoint(stakeAddr));
         return assets.filter(asset => {
-            return !policyId || asset.unit.includes(policyId);
+            return !policyProvided || asset.unit.includes(policyId);
         }).reduce((acc, asset) => {
+            if (!policyProvided) policyId = asset.unit.substring(0, 56);
             // Get asset name
-            const assetName = policyId ? convertFromHex(asset.unit.replace(policyId, '')) : convertFromHex(asset.unit).substr(56);
+            const assetName = convertFromHex(asset.unit.replace(policyId, ''));
             const quantity = parseFloat(asset.quantity);
-            if (policyId) {
+            if (policyProvided) {
                 acc[assetName] = quantity;
                 return acc;
             }
