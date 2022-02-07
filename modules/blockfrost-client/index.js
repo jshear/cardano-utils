@@ -31,34 +31,21 @@ class BlockfrostClient {
     }
 
     async getAssetOwners(policyId, assetName) {
-        const owners = {};
-        let page = 0;
-        let stop = false;
-        while (!stop) {
-            const res = fetch(this._getAssetOwnersEndpoint(policyId, assetName, page++), {
-                method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'project_id': this.projectId
-                }
-            }).then(response => {
-                if (!response.ok) throw new Error('Asset ownership data is unavailable for ' + policyId + '.' + assetName);
+        const owners = await this._getAllPages(this._getAssetOwnersEndpoint(policyId, assetName), {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'project_id': this.projectId
+            }
+        });
 
-                return response.json();
-            })
-            .then(jsonData => {
-                if (!jsonData || !Array.isArray(jsonData))
-                    throw new Error('Invalid asset ownership data for ' + policyId + '.' + assetName);
-
-                for (const ownerEntry of jsonData) {
-                    owners[ownerEntry.address] = parseInt(ownerEntry.quantity);
-                }
-
-                stop = (jsonData.length === 0);
-            });
-        }
-
-        return owners;
+        return owners.sort((a, b) => {
+            return parseInt(b.quantity) - parseInt(a.quantity);
+        }).reduce((acc, ownerEntry) => {
+            if (acc[ownerEntry.address]) throw new Error('Duplicate owner entry for ' + ownerEntry.address);
+            acc[ownerEntry.address] = parseInt(ownerEntry.quantity);
+            return acc;
+        }, {});
     }
 
     async getOwnedAssets(stakeAddr, policyId) {
@@ -75,8 +62,9 @@ class BlockfrostClient {
                 acc[assetName] = quantity;
                 return acc;
             }
-            // If no policy was specified, include the policy in the asset identifier
-            acc[policyId + '.' + assetName] = quantity;
+            // If no policy was specified, map by policy ID => Asset name
+            if (!acc.hasOwnProperty(policyId)) acc[policyId] = {};
+            acc[policyId][assetName] = quantity;
             return acc;
         }, {});
     }
@@ -113,14 +101,14 @@ class BlockfrostClient {
             return response.json();
         }).then(asset => {
             const metadata = asset.onchain_metadata;
-            const hasIpfsImage = metadata.image && matadata.image.startsWith('ipfs://');
+            const hasIpfsImage = metadata.image && metadata.image.startsWith('ipfs://');
             const standardAsset = {
-                id: asset.asset,
+                id: asset.fingerprint,
                 policyId: asset.policy_id,
                 assetName: convertFromHex(asset.asset_name),
                 assetQuantity: parseInt(asset.quantity)
             };
-            if (hasIpfsImage) standardAsset.ipfsImage = 'https://ipfs.blockfrost.dev/ipfs/' + metadata.image.substr(7);
+            if (hasIpfsImage) standardAsset.imageUrl = 'https://ipfs.blockfrost.dev/ipfs/' + metadata.image.substr(7);
             standardAsset.metadata = metadata;
             return standardAsset;
         });
@@ -152,7 +140,7 @@ class BlockfrostClient {
         return vals;
     }
 
-    _getAssetOwnersEndpoint(policyId, assetName, page) {
+    _getAssetOwnersEndpoint(policyId, assetName) {
         return this.baseUrl + '/assets/' + policyId + convertToHex(assetName) + '/addresses';
     }
 
