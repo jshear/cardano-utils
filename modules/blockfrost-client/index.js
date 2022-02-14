@@ -48,21 +48,26 @@ class BlockfrostClient {
         }, {});
     }
 
-    async getOwnedAssets(stakeAddr, policyId) {
-        const policyProvided = !!policyId;
+    async getOwnedAssets(stakeAddr, policyIds) {
+        const policyProvided = !!policyIds;
         const assets = await this._getAllPages(this._getOwnedAssetsEndpoint(stakeAddr));
         return assets.filter(asset => {
-            return !policyProvided || asset.unit.includes(policyId);
+            if (!policyProvided) return true;
+            if (!Array.isArray(policyIds)) return asset.unit.includes(policyIds);
+            for (const policyId of policyIds) {
+                if (asset.unit.includes(policyId)) return true;
+            }
+            return false;
         }).reduce((acc, asset) => {
-            if (!policyProvided) policyId = asset.unit.substring(0, 56);
+            const policyId = asset.unit.substring(0, 56);
             // Get asset name
             const assetName = convertFromHex(asset.unit.replace(policyId, ''));
             const quantity = parseFloat(asset.quantity);
-            if (policyProvided) {
+            if (policyProvided && !Array.isArray(policyIds)) {
                 acc[assetName] = quantity;
                 return acc;
             }
-            // If no policy was specified, map by policy ID => Asset name
+            // If no policy was specified or multiple were specified, map by policy ID => Asset name
             if (!acc.hasOwnProperty(policyId)) acc[policyId] = {};
             acc[policyId][assetName] = quantity;
             return acc;
@@ -84,8 +89,6 @@ class BlockfrostClient {
                 quantity: asset.quantity
             };
         });
-
-        return assets;
     }
 
     async getAssetData(policyId, assetName) {
