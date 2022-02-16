@@ -44,6 +44,16 @@ const CardanoUtils = (function(blockfrostProjectId, testnet, customLog) {
         }
     }
 
+    function extractBech32(address) {
+        try {
+            serializationClient.addressHelper.extractBech32(address);
+            return true;
+        } catch(err) {
+            log.error('Invalid Bech32 output address');
+            return false;
+        }
+    }
+
     async function getNFTAssetOwner(policyId, assetName) {
         if (!state.blockfrostClient) throw new Error('BlockFrost is unavailable -- no project ID was provided');
         return state.blockfrostClient.getNFTAssetOwner(policyId, assetName).catch(err => {
