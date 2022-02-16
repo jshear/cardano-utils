@@ -24,7 +24,7 @@ class AddressHelper {
         return stakeAddr;
     }
 
-    extractBech32(address) {
+    extractBech32(address, testnet) {
         const sep = address.lastIndexOf('1');
         if (sep < 0) throw new Error('Invalid Bech32 address');
         const prefix = address.slice(0, sep);
@@ -32,7 +32,7 @@ class AddressHelper {
 
         // For now, just validate payment address -- the intent of this method is to validate bech32 and
         // divide a Cardano address into its parts (prefix, network, header type, payment part, delegation part)
-        if (prefix !== 'addr') throw new Error('Invalid output address');
+        if (prefix !== 'addr' + (testnet ? '_test' : '')) throw new Error('Invalid output address');
         const addr = Address.from_bech32(address);
         const baseAddr = BaseAddress.from_address(addr);
         if (!baseAddr) throw new Error('No base address found');

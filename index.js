@@ -46,7 +46,7 @@ const CardanoUtils = (function(blockfrostProjectId, testnet, customLog) {
 
     function extractBech32(address) {
         try {
-            serializationClient.addressHelper.extractBech32(address);
+            serializationClient.addressHelper.extractBech32(address, testnet);
             return true;
         } catch(err) {
             log.error('Invalid Bech32 output address');
