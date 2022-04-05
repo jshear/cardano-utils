@@ -1,8 +1,9 @@
 const createCardanoUtils = require('../index.js');
 
 const projectId = '';
+const testnet = false;
 
-const cardanoUtils = createCardanoUtils(projectId, false);
+const cardanoUtils = createCardanoUtils(projectId, testnet);
 
 function testValidateSignedMessage() {
 
@@ -22,6 +23,39 @@ function testGetStakeAddress() {
 
     stakeAddr = cardanoUtils.getStakeAddress('addrfdsafsdf');
     if (stakeAddr) throw new Error('Stake address conversion didn\'t fail with invalid address');
+}
+
+function testExtractBech32() {
+    try {
+        cardanoUtils.extractBech32('');
+        throw new Error('Extraction should fail');
+    } catch(err) {}
+
+    try {
+        cardanoUtils.extractBech32('addr1fsdfasfd');
+        throw new Error('Extraction should fail');
+    } catch(err) {}
+
+    try {
+        cardanoUtils.extractBech32('arewjklf;sf');
+        throw new Error('Extraction should fail');
+    } catch(err) {}
+
+    if (testnet) {
+        try {
+            cardanoUtils.extractBech32('addr1q9qdsyy3leg336a9esvvkaha9uudlg9ndxhd4sywqs9jus64e4wsh29mr0xn7cl0uyvj6z8l5wr6w05xquym3wnmkrkslye9za');
+            throw new Error('Extraction should fail');
+        } catch(err) {}
+
+        cardanoUtils.extractBech32('addr_test1qpqdsyy3leg336a9esvvkaha9uudlg9ndxhd4sywqs9jus64e4wsh29mr0xn7cl0uyvj6z8l5wr6w05xquym3wnmkrksujy9wz');
+    } else {
+        try {
+            cardanoUtils.extractBech32('addr_test1qpqdsyy3leg336a9esvvkaha9uudlg9ndxhd4sywqs9jus64e4wsh29mr0xn7cl0uyvj6z8l5wr6w05xquym3wnmkrksujy9wz');
+            throw new Error('Extraction should fail');
+        } catch(err) {}
+        cardanoUtils.extractBech32('addr1q9qdsyy3leg336a9esvvkaha9uudlg9ndxhd4sywqs9jus64e4wsh29mr0xn7cl0uyvj6z8l5wr6w05xquym3wnmkrkslye9za');
+        if (!cardanoUtils.extractBech32('addr1v9k50ml6cgu6vlgwwfa33567ntwv4a52xp3mcww90fjdfeccu0p9p')) throw new Error('failed');
+    }
 }
 
 function testConvertToHex() {
@@ -74,4 +108,5 @@ testGetAssetOwners();
 testGetOwnedAssets();
 testGetPolicyAssets();
 testGetAssetData();
+testExtractBech32();
 

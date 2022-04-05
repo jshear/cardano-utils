@@ -34,8 +34,9 @@ class AddressHelper {
         // divide a Cardano address into its parts (prefix, network, header type, payment part, delegation part)
         if (prefix !== 'addr' + (testnet ? '_test' : '')) throw new Error('Invalid output address');
         const addr = Address.from_bech32(address);
-        const baseAddr = BaseAddress.from_address(addr);
-        if (!baseAddr) throw new Error('No base address found');
+        if (!addr) throw new Error('Invalid address');
+        return addr;
+        //const baseAddr = BaseAddress.from_address(addr);
     }
 };
 

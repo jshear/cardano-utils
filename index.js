@@ -100,7 +100,7 @@ const CardanoUtils = (function(blockfrostProjectId, testnet, customLog) {
         validateSignedMessage: validateSignedMessage,
         getStakeAddress: getStakeAddress,
         extractBech32: extractBech32,
-        convertToHex: commonUtils.converToHex,
+        convertToHex: commonUtils.convertToHex,
         convertFromHex: commonUtils.convertFromHex,
         getSlot: commonUtils.getSlot,
         getNFTAssetOwner: getNFTAssetOwner,
