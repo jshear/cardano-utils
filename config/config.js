@@ -1,5 +1,5 @@
 const appRoot = path.resolve(__dirname, '..');
 
-module.exports = {
+export default {
     appRoot: appRoot
 };

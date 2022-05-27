@@ -1,7 +1,11 @@
 const shelleyGenesisTimestamp = 1596491091;
 const shelleyGenesisSlot = 4924800;
 
-function convertToHex(str) {
+// Only able to look back to 10/20/2021, not sure when the genesis block was
+const shelleyTestnetArbitraryTimestamp = 1634742062;
+const shelleyTestnetArbitrarySlot = 40372846;
+
+export function stringToHex(str) {
     let hexStr = '';
     for (let i = 0; i < str.length; i++) {
         const hex = Number(str.charCodeAt(i)).toString(16);
@@ -10,7 +14,7 @@ function convertToHex(str) {
     return hexStr;
 }
 
-function convertFromHex(hexData) {
+export function stringFromHex(hexData) {
     const hex = hexData.toString();
     let str = '';
     for (let i = 0; i < hex.length; i += 2) {
@@ -19,13 +23,8 @@ function convertFromHex(hexData) {
     return str;
 }
 
-function getSlot(timestamp) {
+export function getSlot(timestamp, testnet) {
     if (!timestamp) timestamp = Math.round((new Date()).getTime() / 1000);
+    if (testnet) return (timestamp - shelleyTestnetArbitraryTimestamp) + shelleyTestnetArbitrarySlot;
     return (timestamp - shelleyGenesisTimestamp) + shelleyGenesisSlot;
 }
-
-module.exports = {
-    convertToHex: convertToHex,
-    convertFromHex: convertFromHex,
-    getSlot: getSlot
-};

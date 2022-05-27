@@ -1,6 +1,6 @@
 {
   "name": "@jshear/cardano-utils",
-  "version": "1.2.8",
+  "version": "2.0.0",
   "description": "A collection of utilities for development on the Cardano blockchain",
   "repository": {
     "type": "git",
@@ -11,8 +11,7 @@
   ],
   "main": "index.js",
   "dependencies": {
-    "@emurgo/cardano-serialization-lib-nodejs": "^9.1.2",
-    "node-fetch": "^2.6.1"
+    
   },
   "author": "jshear",
   "bugs": {
@@ -23,5 +22,6 @@
   "scripts": {
     "test": "node ./tests/index.js"
   },
-  "license": "GPL-3.0-or-later"
+  "license": "GPL-3.0-or-later",
+  "type": "module"
 }
